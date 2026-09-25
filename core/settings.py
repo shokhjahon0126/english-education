@@ -32,7 +32,6 @@ config('ALLOWED_HOSTS', default='127.0.0.1', cast=Csv())
 # Application definition
 
 
-
 SHARED_APPS = (
     'django_tenants',
     'apps.customers',
@@ -42,32 +41,43 @@ SHARED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'django.contrib.sites',  
+    'django.contrib.sites',  
     "rest_framework",
+    "phonenumber_field",
+    'drf_spectacular',
 
+    'apps.users',
 )
 
 TENANT_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.auth',
     'django.contrib.sessions',
-    'django.contrib.sites',
+    # 'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.admin',
     'django.contrib.staticfiles',
 
     'apps.users',
 )
+SITE_ID = 1
 
 AUTH_USER_MODEL = 'users.User'
 
-# SITE_ID = 1
 
 INSTALLED_APPS = list(SHARED_APPS) + [app for app in TENANT_APPS if app not in SHARED_APPS]
 
 TENANT_MODEL = "customers.Client" # app.Model
 
 TENANT_DOMAIN_MODEL = "customers.Domain"  # app.Model
+
+
+TIME_ZONE = 'Asia/Samarkand'  # Бухара находится в этом часовом поясе (UTC+5)
+USE_TZ = True
+
+# Настройки для django-phonenumber-field (опционально)
+PHONENUMBER_DEFAULT_REGION = 'UZ' 
+
 
 MIDDLEWARE = [
     
@@ -144,7 +154,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Samarkand'
 
 USE_I18N = True
 
@@ -164,4 +174,25 @@ MAILERS = {
     'default': {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
+}
+
+
+REST_FRAMEWORK = {
+
+    #Auth settings
+
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    
+    #Spectacular Settings
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Your Project API',
+    'DESCRIPTION': 'Your project description',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    # OTHER SETTINGS
 }
