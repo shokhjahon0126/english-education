@@ -13,8 +13,25 @@ class Role(models.TextChoices):
 
 class User(AbstractUser):
     role = models.CharField(
+        max_length=20,
         choices=Role.choices,
-        default=Role.STUDENT
+        default=Role.STUDENT,
     )
 
     phone = PhoneNumberField(unique=True)
+
+    @property
+    def is_super_admin(self):
+        return self.role == Role.SUPER_ADMIN or (self.is_superuser and self.role != Role.ADMIN)
+
+    @property
+    def is_admin_user(self):
+        return self.role in [Role.ADMIN, Role.SUPER_ADMIN] or self.is_superuser
+
+    @property
+    def is_teacher(self):
+        return self.role == Role.TEACHER
+
+    @property
+    def is_student(self):
+        return self.role == Role.STUDENT

@@ -1,0 +1,557 @@
+openapi: 3.0.3
+info:
+  title: English Education API
+  version: 1.0.0
+  description: English Education platform API documentation with JWT authentication
+paths:
+  /User/:
+    get:
+      operationId: User_list
+      description: Barcha foydalanuvchilar ro'yxati (faqat Admin va SuperAdmin uchun).
+      tags:
+      - Users
+      security:
+      - jwtAuth: []
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+          description: ''
+    post:
+      operationId: User_create
+      description: Yangi foydalanuvchi yaratish (SuperAdmin yaratish taqiqlangan;
+        Admin faqat Teacher va Student yarata oladi).
+      tags:
+      - Users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCreate'
+          description: ''
+  /User/{id}/:
+    get:
+      operationId: User_retrieve
+      description: Bitta foydalanuvchini ko'rish (faqat o'zi yoki Admin/SuperAdmin).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user.
+        required: true
+      tags:
+      - Users
+      security:
+      - jwtAuth: []
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    patch:
+      operationId: User_partial_update
+      description: Foydalanuvchi ma'lumotlarini qisman yangilash (PATCH).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user.
+        required: true
+      tags:
+      - Users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserUpdate'
+      security:
+      - jwtAuth: []
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserUpdate'
+          description: ''
+    delete:
+      operationId: User_destroy
+      description: Foydalanuvchini o'chirish (faqat Admin va SuperAdmin).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user.
+        required: true
+      tags:
+      - Users
+      security:
+      - jwtAuth: []
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /User/change-password/:
+    post:
+      operationId: User_change_password_create
+      description: Foydalanuvchi parolini yangilash (new_password va new_password_confirm
+        orqali).
+      tags:
+      - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePassword'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ChangePassword'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ChangePassword'
+        required: true
+      security:
+      - jwtAuth: []
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /User/login/:
+    post:
+      operationId: User_login_create
+      description: |-
+        Foydalanuvchi login qilishi uchun API.
+        Username yoki Phone orqali ishlaydi.
+        Natijada access, refresh tokenlar va userning id, role lari qaytadi.
+      tags:
+      - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPair'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPair'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPair'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomTokenObtainPair'
+          description: ''
+  /User/me/:
+    get:
+      operationId: User_me_retrieve
+      description: Hozirgi tizimga kirgan foydalanuvchi o'z profilini ko'rish yoki
+        PATCH orqali tahrirlash endpointi.
+      tags:
+      - Users
+      security:
+      - jwtAuth: []
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    patch:
+      operationId: User_me_partial_update
+      description: Hozirgi tizimga kirgan foydalanuvchi o'z profilini ko'rish yoki
+        PATCH orqali tahrirlash endpointi.
+      tags:
+      - Users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+      security:
+      - jwtAuth: []
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /User/token/refresh/:
+    post:
+      operationId: User_token_refresh_create
+      description: Yangi access token olish uchun refresh tokenni yuborish.
+      tags:
+      - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+components:
+  schemas:
+    ChangePassword:
+      type: object
+      description: |-
+        Parolni o'zgartirish uchun serializer.
+        new_password va new_password_confirm talab qilinadi.
+        Ixtiyoriy ravishda old_password ham tekshirilishi mumkin.
+      properties:
+        old_password:
+          type: string
+          writeOnly: true
+          description: Eski parol (ixtiyoriy, agar kiritilsa tekshiriladi)
+        new_password:
+          type: string
+          writeOnly: true
+          description: Yangi parol
+        new_password_confirm:
+          type: string
+          writeOnly: true
+          description: Yangi parolni tasdiqlash
+      required:
+      - new_password
+      - new_password_confirm
+    CustomTokenObtainPair:
+      type: object
+      description: |-
+        Login uchun JWT serializer.
+        Username yoki Phone orqali autentifikatsiya qilishni qo'llab-quvvatlaydi.
+        Token bilan birga user ning id, role va joriy tenantning schema_name sini qaytaradi.
+      properties:
+        username:
+          type: string
+          description: Username yoki telefon raqami (+998...)
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - password
+      - username
+    PatchedUser:
+      type: object
+      description: Foydalanuvchilar ro'yxati va batafsil ma'lumotlarini ko'rish uchun
+        serializer.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        phone:
+          type: string
+          maxLength: 128
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        email:
+          title: Email address
+          oneOf:
+          - type: string
+            format: email
+            maxLength: 254
+          - type: string
+            maxLength: 0
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this user should be treated as active. Unselect
+            this instead of deleting accounts.
+        date_joined:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedUserUpdate:
+      type: object
+      description: Foydalanuvchini faqat PATCH orqali qisman tahrirlash uchun serializer.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+        phone:
+          type: string
+          maxLength: 128
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        email:
+          title: Email address
+          oneOf:
+          - type: string
+            format: email
+            maxLength: 254
+          - type: string
+            maxLength: 0
+        role:
+          allOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          description: |-
+            Foydalanuvchi roli
+
+            * `SUPER_ADMIN` - Super Admin
+            * `ADMIN` - Admin
+            * `TEACHER` - Teacher
+            * `STUDENT` - Student
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this user should be treated as active. Unselect
+            this instead of deleting accounts.
+    RoleEnum:
+      enum:
+      - SUPER_ADMIN
+      - ADMIN
+      - TEACHER
+      - STUDENT
+      type: string
+      description: |-
+        * `SUPER_ADMIN` - Super Admin
+        * `ADMIN` - Admin
+        * `TEACHER` - Teacher
+        * `STUDENT` - Student
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          writeOnly: true
+      required:
+      - access
+      - refresh
+    User:
+      type: object
+      description: Foydalanuvchilar ro'yxati va batafsil ma'lumotlarini ko'rish uchun
+        serializer.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        phone:
+          type: string
+          maxLength: 128
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        email:
+          title: Email address
+          oneOf:
+          - type: string
+            format: email
+            maxLength: 254
+          - type: string
+            maxLength: 0
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this user should be treated as active. Unselect
+            this instead of deleting accounts.
+        date_joined:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - date_joined
+      - id
+      - phone
+      - username
+    UserCreate:
+      type: object
+      description: |-
+        Foydalanuvchi yaratish uchun serializer.
+        - SuperAdmin rolini hech qaysi user create qila olmaydi (faqat admin panel).
+        - Admin faqat Teacher va Student rollarini yarata oladi.
+        - SuperAdmin esa Admin, Teacher, Student yarata oladi (lekin SuperAdmin emas).
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        phone:
+          type: string
+          maxLength: 128
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        email:
+          title: Email address
+          oneOf:
+          - type: string
+            format: email
+            maxLength: 254
+          - type: string
+            maxLength: 0
+        role:
+          allOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          default: STUDENT
+          description: |-
+            Foydalanuvchi roli (SUPER_ADMIN rolini yaratish mumkin emas)
+
+            * `SUPER_ADMIN` - Super Admin
+            * `ADMIN` - Admin
+            * `TEACHER` - Teacher
+            * `STUDENT` - Student
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - id
+      - password
+      - phone
+      - username
+    UserUpdate:
+      type: object
+      description: Foydalanuvchini faqat PATCH orqali qisman tahrirlash uchun serializer.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+        phone:
+          type: string
+          maxLength: 128
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        email:
+          title: Email address
+          oneOf:
+          - type: string
+            format: email
+            maxLength: 254
+          - type: string
+            maxLength: 0
+        role:
+          allOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          description: |-
+            Foydalanuvchi roli
+
+            * `SUPER_ADMIN` - Super Admin
+            * `ADMIN` - Admin
+            * `TEACHER` - Teacher
+            * `STUDENT` - Student
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this user should be treated as active. Unselect
+            this instead of deleting accounts.
+      required:
+      - id
+      - phone
+      - username
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'JWT access tokenni kiriting. Masalan: Bearer <token>'

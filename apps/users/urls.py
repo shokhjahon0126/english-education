@@ -1,20 +1,31 @@
-from django.urls import path
+from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
+from rest_framework_simplejwt.views import TokenRefreshView
+from drf_spectacular.utils import extend_schema
+
+from .views import (
+    ChangePasswordView,
+    CustomTokenObtainPairView,
+    UserViewSet,
 )
 
-from .views import UserApiViewSets
-
 router = DefaultRouter()
+router.register(r'', UserViewSet, basename='user')
 
-router.register('',UserApiViewSets,basename='users')
+# TokenRefreshView ni Auth tegi ostida ko'rsatish
+DecoratedTokenRefreshView = extend_schema(
+    tags=['Auth'],
+    auth=[],
+    description="Yangi access token olish uchun refresh tokenni yuborish."
+)(TokenRefreshView)
 
 
 urlpatterns = [
-    path('api/token/', TokenObtainPairView.as_view()),
-    path('api/token/refresh/', TokenRefreshView.as_view()),
-]
+    # Auth endpoints
+    path('login/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', DecoratedTokenRefreshView.as_view(), name='token_refresh'),
+    path('change-password/', ChangePasswordView.as_view(), name='change_password'),
 
-urlpatterns += router.urls
+    # User CRUD endpoints (PUT taqiqlangan, faqat PATCH)
+    path('', include(router.urls)),
+]
