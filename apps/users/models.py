@@ -20,6 +20,12 @@ class User(AbstractUser):
 
     phone = PhoneNumberField(unique=True)
 
+    class Meta:
+        ordering = ['-pk']
+
+    def __str__(self):
+        return f"{self.username} {self.role}"
+
     @property
     def is_super_admin(self):
         return self.role == Role.SUPER_ADMIN or (self.is_superuser and self.role != Role.ADMIN)
