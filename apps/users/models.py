@@ -24,7 +24,7 @@ class User(AbstractUser):
         ordering = ['-pk']
 
     def __str__(self):
-        return f"{self.username} {self.role}"
+        return f"{self.pk} {self.username} {self.role}"
 
     @property
     def is_super_admin(self):
